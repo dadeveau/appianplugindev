@@ -1,7 +1,7 @@
 /*
  * @author Daniel DeVeau
  */
-package com.deveau.findsrcinplugin;
+package com.deveau.pluginsrcanalyzer;
 
 import com.appiancorp.services.ServiceContext;
 import com.appiancorp.suiteapi.common.exceptions.AppianException;
@@ -24,6 +24,7 @@ import java.util.zip.ZipException;
 
 /* Open Questions and action
 Add good comments around methods.
+Every class file must have a java file
 
 Add support for zip. First scan zip for Jar, then pass jar into jar processing method.
 Any formats besides zip and Jar? Could test and handle the error throw when zip is protected.
@@ -33,7 +34,7 @@ What if Zip is password protected?
 
 
 @AppianScriptingFunctionsCategory
-public abstract class findpluginsrc {
+public class findpluginsrc {
     //Takes in a document id or object (Do I need folder ID to find document?)
     //Load the jar or zip
     //Check if any java files exist in jar or zip
