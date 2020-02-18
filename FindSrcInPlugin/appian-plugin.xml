@@ -1,0 +1,8 @@
+<appian-plugin name="Find Source Code in Plugin" key="com.deveau.findpluginsource">
+    <plugin-info>
+        <description>A function</description>
+        <vendor name="Appian" url="http://www.appian.com"/>
+        <version>0.0.1</version>
+    </plugin-info>
+    <function key="findsrcinplugin" class="com.deveau.findpluginsrc"/>
+</appian-plugin>
