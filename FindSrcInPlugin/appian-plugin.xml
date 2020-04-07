@@ -2,7 +2,7 @@
     <plugin-info>
         <description>A function</description>
         <vendor name="Appian" url="http://www.appian.com"/>
-        <version>0.0.2</version>
+        <version>1.0.0</version>
     </plugin-info>
-    <function key="findsrcinplugin" class="com.deveau.pluginsrcanalyzer.findpluginsrc"/>
+    <function key="findpluginsrc" class="com.deveau.pluginsrcanalyzer.findpluginsrc"/>
 </appian-plugin>

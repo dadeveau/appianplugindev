@@ -5,9 +5,9 @@ package com.deveau.pluginsrcanalyzer;
 
 import com.appiancorp.services.ServiceContext;
 import com.appiancorp.suiteapi.common.exceptions.AppianException;
+import com.appiancorp.suiteapi.common.exceptions.InvalidOperationException;
 import com.appiancorp.suiteapi.content.ContentConstants;
 import com.appiancorp.suiteapi.content.ContentService;
-import com.appiancorp.suiteapi.content.exceptions.InvalidContentException;
 import com.appiancorp.suiteapi.expression.annotations.AppianScriptingFunctionsCategory;
 import com.appiancorp.suiteapi.expression.annotations.Function;
 import com.appiancorp.suiteapi.expression.annotations.Parameter;
@@ -23,45 +23,35 @@ import java.util.jar.JarInputStream;
 import java.util.zip.ZipException;
 
 /* Open Questions and action
-Add good comments around methods.
-Every class file must have a java file
-
-Add support for zip. First scan zip for Jar, then pass jar into jar processing method.
-Any formats besides zip and Jar? Could test and handle the error throw when zip is protected.
-What if Zip is password protected?
-
+Every class file must have a java file.
+Support Zip.
  */
 
 
 @AppianScriptingFunctionsCategory
 public class findpluginsrc {
-    //Takes in a document id or object (Do I need folder ID to find document?)
-    //Load the jar or zip
-    //Check if any java files exist in jar or zip
     private static final Logger LOG = Logger.getLogger(findpluginsrc.class);
 
-
     @Function
-    public boolean doesPluginHaveSourceCode(
-            ContentService cs,
-            ServiceContext sc,
-            @Parameter @DocumentDataType Long pluginJarID) throws AppianException {
+    public boolean doesPluginHaveSourceCode(ContentService cs, ServiceContext sc, @Parameter @DocumentDataType Long pluginJarID)
+            throws AppianException {
+
         Document pluginDocument = cs.download(pluginJarID, ContentConstants.VERSION_CURRENT, false)[0];
         String pluginFilePath = pluginDocument.getInternalFilename();
         String pluginDocumentExtension = pluginDocument.getExtension().toLowerCase();
         LOG.debug("Processing file: " + pluginFilePath + " with extension: " + pluginDocumentExtension);
 
         if (!pluginDocumentExtension.equals("jar")) {
-            LOG.error("pluginJarID passed in is not a JAR file. Failing:");
-            throw new InvalidContentException();
+            throw new InvalidOperationException("pluginJarID passed in is not a JAR file.");
         }
         //throws AppianException
         return srcCodeFinder(pluginFilePath);
     }
 
-    public boolean srcCodeFinder(String jarPath) throws AppianException {
+    public boolean srcCodeFinder(String jarPath)
+    //throws AppianException
+    {
         try (JarInputStream pluginJarStream = new JarInputStream(new FileInputStream(jarPath), false)) {
-            // Can there be more than 1 jar coming from the stream?
             JarEntry pluginJar;
             while (true) {
                 pluginJar = pluginJarStream.getNextJarEntry();
@@ -74,13 +64,16 @@ public class findpluginsrc {
                 }
             }
         } catch (FileNotFoundException e) {
-            LOG.error("FileNotFoundException thrown while trying to open a FileInputStream to process JAR file. Failing:");
-            throw new AppianException(e);
+            LOG.error("FileNotFoundException thrown while trying to open a FileInputStream to process JAR file.");
+            //throw new AppianException(e);
+            return true; //Moving on rather than throwing an error to avoid public facing error messages.
         } catch (ZipException e) {
             LOG.error("ZipException thrown while trying to get the next entry from the JAR file. Printing exception and moving on:", e);
+            return true; //Moving on rather than throwing an error to avoid public facing error messages.
         } catch (IOException e) {
             LOG.error("IOException thrown while trying to process the JAR file. Failing:");
-            throw new AppianException(e);
+            //throw new AppianException(e);
+            return true; //Moving on rather than throwing an error to avoid public facing error messages.
         }
         return false;
     }
